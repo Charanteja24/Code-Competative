@@ -1,77 +1,67 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define MAX 100 
 
-typedef struct Node {
-    int data;
-    struct Node* next;
-} Node;
+typedef struct {
+    int data[MAX];
+    int top;
+} Stack;
 
-Node* createNode(int data) {
-    Node* newNode = (Node*)malloc(sizeof(Node));
-    if (!newNode) {
-        printf("Memory allocation failed!\n");
-        exit(1);
+void initStack(Stack* s) {
+    s->top = -1;
+}
+
+int isEmpty(Stack* s) {
+    return s->top == -1;
+}
+
+int isFull(Stack* s) {
+    return s->top == MAX - 1;
+}
+
+void push(Stack* s, int value) {
+    if (isFull(s)) {
+        printf("Stack Overflow! Cannot push %d onto the stack.\n", value);
+        return;
     }
-    newNode->data = data;
-    newNode->next = NULL;
-    return newNode;
+    s->data[++s->top] = value;
+    printf("%d pushed onto the stack.\n", value);
 }
 
-int isEmpty(Node* top) {
-    return top == NULL;
-}
-
-void push(Node** top, int data) {
-    Node* newNode = createNode(data);
-    newNode->next = *top; 
-    *top = newNode;      
-    printf("%d pushed onto the stack.\n", data);
-}
-
-int pop(Node** top) {
-    if (isEmpty(*top)) {
+int pop(Stack* s) {
+    if (isEmpty(s)) {
         printf("Stack Underflow! Cannot pop from the stack.\n");
-        return -1;
+        return -1; 
     }
-    Node* temp = *top;
-    int poppedData = temp->data;
-    *top = (*top)->next;
-    free(temp);        
-    return poppedData;
+    return s->data[s->top--];
 }
 
-int peek(Node* top) {
-    if (isEmpty(top)) {
+int peek(Stack* s) {
+    if (isEmpty(s)) {
         printf("Stack is empty! Cannot peek.\n");
         return -1; 
     }
-    return top->data;
-}
-
-void freeStack(Node** top) {
-    while (!isEmpty(*top)) {
-        pop(top);
-    }
+    return s->data[s->top];
 }
 
 int main() {
-    Node* top = NULL; 
+    Stack s;
+    initStack(&s);
 
-    push(&top, 10);
-    push(&top, 20);
-    push(&top, 30);
+    push(&s, 10);
+    push(&s, 20);
+    push(&s, 30);
 
-    printf("Top element is: %d\n", peek(top));
+    printf("Top element is: %d\n", peek(&s));
 
-    printf("Popped element is: %d\n", pop(&top));
-    printf("Popped element is: %d\n", pop(&top));
+    printf("Popped element is: %d\n", pop(&s));
+    printf("Popped element is: %d\n", pop(&s));
 
-    if (isEmpty(top)) {
+    if (isEmpty(&s)) {
         printf("Stack is empty.\n");
     } else {
         printf("Stack is not empty.\n");
     }
 
-    freeStack(&top); 
     return 0;
 }
